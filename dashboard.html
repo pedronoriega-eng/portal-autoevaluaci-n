@@ -26,8 +26,35 @@
     </div>
   </header>
 
-  <!-- Contenedor Principal Dashboard -->
-  <main class="container" style="justify-content: flex-start; padding-top: 2rem;">
+  <!-- SECCIÓN: PANTALLA DE ACCESO ADMINISTRATIVO (PASSCODE LOCK) -->
+  <section id="dashboard-gate-screen" class="dashboard-gate-screen">
+    <div class="gate-card">
+      <div class="gate-logo">
+        <img src="https://tecnologicadeloriente.edu.co/wp-content/uploads/2024/09/LOGO-ILLUSTRATOR-01.png" alt="Logo ETO" style="max-height: 55px; width: auto; object-fit: contain;">
+      </div>
+      <h2>Acceso Analítico Reservado</h2>
+      <p>Este panel contiene consolidados institucionales de autoevaluación y datos personales protegidos. Por favor, ingrese la clave administrativa para continuar.</p>
+      
+      <form id="form-gate" onsubmit="event.preventDefault(); validarAccesoDashboard();" style="width: 100%; margin-top: 1.5rem;">
+        <div class="input-group" style="text-align: left;">
+          <label class="input-label" for="gate-password">Contraseña de Administrador</label>
+          <input class="input-field" type="password" id="gate-password" placeholder="••••••••" required>
+        </div>
+        
+        <!-- Contenedor para error de contraseña -->
+        <div id="gate-error-msg" class="hidden" style="background-color: #FFEBEE; color: #D32F2F; border: 1px solid rgba(211, 47, 47, 0.2); padding: 10px 14px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-circle-exclamation"></i> Clave incorrecta. Inténtelo nuevamente.
+        </div>
+        
+        <button type="submit" class="btn-primary">
+          Ingresar al Panel <i class="fa-solid fa-right-to-bracket"></i>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Contenedor Principal Dashboard (Oculto por defecto) -->
+  <main id="main-dashboard" class="container hidden" style="justify-content: flex-start; padding-top: 2rem;">
     
     <div class="hero-section" style="margin-bottom: 2rem; text-align: left;">
       <h2>Panel de Control y Analítica de Percepción</h2>

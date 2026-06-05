@@ -71,6 +71,21 @@ const MOCK_DATA = [
 ];
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Verificar acceso primero en sessionStorage
+  if (sessionStorage.getItem("dashboard_authorized") === "true") {
+    const gate = document.getElementById("dashboard-gate-screen");
+    const main = document.getElementById("main-dashboard");
+    if (gate) gate.classList.add("hidden");
+    if (main) main.classList.remove("hidden");
+    
+    inicializarDatosDashboard();
+  } else {
+    const main = document.getElementById("main-dashboard");
+    if (main) main.classList.add("hidden");
+  }
+});
+
+function inicializarDatosDashboard() {
   let data = JSON.parse(localStorage.getItem("encuestas_guardadas")) || [];
   
   // Si no hay datos, cargar la simulación para que se vea asombroso (Wow Effect)
@@ -83,7 +98,8 @@ document.addEventListener("DOMContentLoaded", () => {
   calcularMetricasDashboard(data);
   inicializarGraficos(data);
   actualizarGrillaExcel();
-});
+}
+
 
 // Métricas de KPIs
 function calcularMetricasDashboard(data) {
@@ -754,4 +770,42 @@ window.exportarAExcelCSV = exportarAExcelCSV;
 window.exportarAMarkdown = exportarAMarkdown;
 window.cerrarModalMarkdown = cerrarModalMarkdown;
 window.copiarMarkdownAlPortapapeles = copiarMarkdownAlPortapapeles;
+
+// Lógica de puerta de seguridad (Passcode lock)
+function validarAccesoDashboard() {
+  const passwordInput = document.getElementById("gate-password");
+  const errorMsg = document.getElementById("gate-error-msg");
+  const card = document.querySelector(".gate-card");
+  
+  if (!passwordInput) return;
+  
+  const claveIngresada = passwordInput.value.trim();
+  
+  // Clave de administrador establecida por el usuario
+  if (claveIngresada === "ETO2026") {
+    sessionStorage.setItem("dashboard_authorized", "true");
+    
+    const gate = document.getElementById("dashboard-gate-screen");
+    const main = document.getElementById("main-dashboard");
+    if (gate) gate.classList.add("hidden");
+    if (main) main.classList.remove("hidden");
+    
+    if (errorMsg) errorMsg.classList.add("hidden");
+    
+    inicializarDatosDashboard();
+  } else {
+    // Clave incorrecta: sacudir la tarjeta y mostrar mensaje
+    passwordInput.value = "";
+    if (errorMsg) errorMsg.classList.remove("hidden");
+    
+    if (card) {
+      card.classList.remove("shake");
+      void card.offsetWidth; // Forzar reflujo para reiniciar la animación CSS
+      card.classList.add("shake");
+    }
+  }
+}
+
+window.validarAccesoDashboard = validarAccesoDashboard;
+
 
