@@ -372,12 +372,17 @@ function actualizarGrillaExcel() {
   thComentarios.innerText = "Comentarios";
   trHead.appendChild(thComentarios);
 
+  // Agregar columna de Acciones (Eliminar)
+  const thAcciones = document.createElement("th");
+  thAcciones.innerText = "Acciones";
+  trHead.appendChild(thAcciones);
+
   head.appendChild(trHead);
 
   // 2. CONSTRUIR CUERPO DE DATOS
   if (dataFiltrada.length === 0) {
     const tr = document.createElement("tr");
-    const totalCols = cols.length + preguntasSheet.length + 2;
+    const totalCols = cols.length + preguntasSheet.length + 3; // +3 para incluir promedio, comentarios y acciones
     tr.innerHTML = `<td colspan="${totalCols}" style="text-align: center; color: var(--text-gray); padding: 2rem;">No hay registros en esta hoja</td>`;
     body.appendChild(tr);
     return;
@@ -469,6 +474,16 @@ function actualizarGrillaExcel() {
     tdCom.style.textOverflow = "ellipsis";
     tdCom.title = item.comentarios_adicionales || "";
     tr.appendChild(tdCom);
+
+    // Acciones (Eliminar registro)
+    const tdAcciones = document.createElement("td");
+    tdAcciones.style.textAlign = "center";
+    tdAcciones.innerHTML = `
+      <button class="btn-delete-row" title="Eliminar este registro de prueba" onclick="eliminarRegistro('${item.id}')">
+        <i class="fa-solid fa-trash-can"></i>
+      </button>
+    `;
+    tr.appendChild(tdAcciones);
 
     body.appendChild(tr);
   });
@@ -781,8 +796,8 @@ function validarAccesoDashboard() {
   
   const claveIngresada = passwordInput.value.trim();
   
-  // Clave de administrador establecida por el usuario
-  if (claveIngresada === "ETO2026") {
+  // Clave de administrador establecida por el usuario (acepta ETO2026 y ETO206)
+  if (claveIngresada === "ETO2026" || claveIngresada === "ETO206") {
     sessionStorage.setItem("dashboard_authorized", "true");
     
     const gate = document.getElementById("dashboard-gate-screen");
@@ -806,6 +821,20 @@ function validarAccesoDashboard() {
   }
 }
 
+// Eliminar un registro de la base de datos
+function eliminarRegistro(id) {
+  if (confirm("¿Está seguro de que desea eliminar permanentemente este registro del portal de autoevaluación?")) {
+    let data = JSON.parse(localStorage.getItem("encuestas_guardadas")) || [];
+    data = data.filter(item => item.id !== id);
+    localStorage.setItem("encuestas_guardadas", JSON.stringify(data));
+    
+    // Recargar la página completa para refrescar todos los KPIs y gráficos
+    location.reload();
+  }
+}
+
 window.validarAccesoDashboard = validarAccesoDashboard;
+window.eliminarRegistro = eliminarRegistro;
+
 
 

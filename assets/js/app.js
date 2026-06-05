@@ -31,6 +31,8 @@ window.cerrarModalHabeas = cerrarModalHabeas;
 window.volverALanding = volverALanding;
 window.volverARegistro = volverARegistro;
 window.volverAEncuestaDesdeComentarios = volverAEncuestaDesdeComentarios;
+window.accederAlDashboard = accederAlDashboard;
+
 
 // Inicialización de eventos al cargar el DOM
 document.addEventListener("DOMContentLoaded", () => {
@@ -363,3 +365,18 @@ function generarUUID() {
     return v.toString(16);
   });
 }
+
+// Función de redirección segura al Dashboard desde la Landing Card
+function accederAlDashboard() {
+  const clave = prompt("Ingrese la clave de acceso de administrador:");
+  if (clave === null) return; // Cancelado por el usuario
+  
+  const claveNormalizada = clave.trim();
+  if (claveNormalizada === "ETO206" || claveNormalizada === "ETO2026") {
+    sessionStorage.setItem("dashboard_authorized", "true");
+    window.location.href = "dashboard.html";
+  } else {
+    alert("Clave incorrecta. Acceso denegado.");
+  }
+}
+

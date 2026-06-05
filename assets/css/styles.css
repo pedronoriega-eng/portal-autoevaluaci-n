@@ -1024,3 +1024,24 @@ header {
 .shake {
   animation: shake 0.35s ease-in-out;
 }
+
+/* Botón de eliminación de filas de prueba en grilla Excel */
+.btn-delete-row {
+  background: none;
+  border: none;
+  color: var(--text-gray-light);
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  transition: var(--transition-smooth);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-delete-row:hover {
+  color: #D32F2F;
+  background-color: #FFEBEE;
+}
+
