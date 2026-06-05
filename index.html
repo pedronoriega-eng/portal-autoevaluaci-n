@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campaña de Autoevaluación 2026 | Escuela Tecnológica del Oriente</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <!-- FontAwesome Icons for premium visual details -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Header Institucional -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-symbol">T</div>
+      <div class="logo-text">
+        <h1>Tecnológica del Oriente</h1>
+        <span>Corporación Escuela Tecnológica del Oriente</span>
+      </div>
+    </div>
+    <div class="campaign-tag">
+      <i class="fa-solid fa-award"></i> Autoevaluación 2026
+    </div>
+  </header>
+
+  <!-- Contenedor Principal (SPA) -->
+  <main class="container">
+
+    <!-- SECCIÓN 1: LANDING PAGE -->
+    <section id="section-landing" class="app-section fade-in">
+      <div class="hero-section">
+        <h2>Tu voz construye nuestra Excelencia</h2>
+        <p>Participa en los instrumentos de autoevaluación institucional bajo los lineamientos de alta calidad (Acuerdo 01 de 2025 del CESU). Selecciona tu estamento para iniciar.</p>
+      </div>
+
+      <div class="estamentos-grid">
+        <!-- Tarjeta Estudiantes -->
+        <div class="estamento-card" onclick="seleccionarEstamento('estudiantes')">
+          <div class="card-icon">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div class="card-content">
+            <h3>Estudiantes</h3>
+            <p>Si eres estudiante regular activo de algún programa académico de pregrado de la institución.</p>
+          </div>
+          <div class="card-meta">31 preguntas</div>
+          <div class="btn-card-action">
+            Iniciar Encuesta <i class="fa-solid fa-arrow-right"></i>
+          </div>
+        </div>
+
+        <!-- Tarjeta Docentes -->
+        <div class="estamento-card" onclick="seleccionarEstamento('docentes')">
+          <div class="card-icon">
+            <i class="fa-solid fa-chalkboard-user"></i>
+          </div>
+          <div class="card-content">
+            <h3>Docentes</h3>
+            <p>Si formas parte del cuerpo docente de planta, tiempo completo, medio tiempo o catedráticos.</p>
+          </div>
+          <div class="card-meta">76 preguntas</div>
+          <div class="btn-card-action">
+            Iniciar Encuesta <i class="fa-solid fa-arrow-right"></i>
+          </div>
+        </div>
+
+        <!-- Tarjeta Egresados -->
+        <div class="estamento-card" onclick="seleccionarEstamento('egresados')">
+          <div class="card-icon">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+          <div class="card-content">
+            <h3>Egresados</h3>
+            <p>Si ya culminaste tu proceso de formación académica y eres graduado de la institución.</p>
+          </div>
+          <div class="card-meta">10 preguntas</div>
+          <div class="btn-card-action">
+            Iniciar Encuesta <i class="fa-solid fa-arrow-right"></i>
+          </div>
+        </div>
+
+        <!-- Tarjeta Administrativos -->
+        <div class="estamento-card" onclick="seleccionarEstamento('administrativos')">
+          <div class="card-icon">
+            <i class="fa-solid fa-user-tie"></i>
+          </div>
+          <div class="card-content">
+            <h3>Administrativos</h3>
+            <p>Si eres personal de apoyo institucional, directivo o administrativo de la Corporación.</p>
+          </div>
+          <div class="card-meta">28 preguntas</div>
+          <div class="btn-card-action">
+            Iniciar Encuesta <i class="fa-solid fa-arrow-right"></i>
+          </div>
+        </div>
+
+        <!-- Tarjeta Empresarios -->
+        <div class="estamento-card" onclick="seleccionarEstamento('empleadores')">
+          <div class="card-icon">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+          <div class="card-content">
+            <h3>Empresarios / Empleadores</h3>
+            <p>Si lideras o representas al sector productivo donde se desempeñan nuestros egresados.</p>
+          </div>
+          <div class="card-meta">3 preguntas</div>
+          <div class="btn-card-action">
+            Iniciar Encuesta <i class="fa-solid fa-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: PUERTA DE SEGURIDAD (REGISTRO Y HABEAS DATA) -->
+    <section id="section-register" class="app-section fade-in hidden">
+      <div class="card-form-container">
+        <div class="form-header">
+          <h2>Registro e Identificación</h2>
+          <p>Por favor, ingresa tus datos. Son requeridos para la validez documental de la encuesta ante el CNA.</p>
+        </div>
+
+        <form id="form-habeas-data" onsubmit="event.preventDefault(); iniciarEncuestaActiva();">
+          <div class="input-group">
+            <label class="input-label" for="user-name">Nombre Completo</label>
+            <input class="input-field" type="text" id="user-name" placeholder="Ej: Pedro Elías Noriega" required>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="user-id">Documento de Identidad (Cédula)</label>
+            <input class="input-field" type="number" id="user-id" placeholder="Ej: 1098765432" required>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="user-phone">Teléfono Celular</label>
+            <input class="input-field" type="tel" id="user-phone" placeholder="Ej: 3156789012" required>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="user-email">Correo Electrónico</label>
+            <input class="input-field" type="email" id="user-email" placeholder="Ej: pedro@oriente.edu.co" required>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="user-program">Programa Académico / Dependencia</label>
+            <select class="input-field select-field" id="user-program" required>
+              <option value="" disabled selected>Selecciona una opción...</option>
+              <option value="Licenciatura en Educación Infantil">Licenciatura en Educación Infantil</option>
+              <option value="Administración de la Seguridad y Salud en el Trabajo">Administración en Seguridad y Salud en el Trabajo</option>
+              <option value="Tecnología en Gestión de la Seguridad y Salud en el Trabajo">Tecnología en Gestión de la SST</option>
+              <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
+              <option value="Derecho">Derecho</option>
+              <option value="Administración de Empresas">Administración de Empresas</option>
+              <option value="Área Administrativa">Área Administrativa (No aplica programa)</option>
+              <option value="Sector Empresarial">Sector Empresarial / Empleador</option>
+            </select>
+          </div>
+
+          <div class="checkbox-group">
+            <input class="checkbox-input" type="checkbox" id="user-habeas" required>
+            <label class="checkbox-label" for="user-habeas">
+              Acepto y autorizo de manera libre, previa y explícita el tratamiento de mis datos personales de conformidad con la <a href="#" onclick="abrirModalHabeas(event)">Política de Tratamiento de Datos Personales (Ley 1581 de 2012 de Habeas Data)</a> de la Corporación Escuela Tecnológica del Oriente.
+            </label>
+          </div>
+
+          <div style="display:flex; gap: 1rem;">
+            <button type="button" class="btn-secondary" onclick="volverALanding()">
+              <i class="fa-solid fa-arrow-left"></i> Atrás
+            </button>
+            <button type="submit" id="btn-iniciar-encuesta" class="btn-primary" disabled>
+              Continuar a la Encuesta <i class="fa-solid fa-circle-arrow-right"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 3: INTERFAZ DE ENCUESTA CONVERSACIONAL (TYPEFORM STYLE) -->
+    <section id="section-survey" class="app-section fade-in hidden">
+      <div class="survey-wrapper">
+        
+        <!-- Barra de Progreso Superior -->
+        <div class="survey-progress-container">
+          <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="volverARegistro()">
+            <i class="fa-solid fa-user-pen"></i> Datos
+          </button>
+          <div class="survey-progress-bar-bg">
+            <div id="survey-progress-bar" class="survey-progress-bar-fill"></div>
+          </div>
+          <span id="survey-progress-text" class="survey-progress-text">Pregunta 1 de 31 (0%)</span>
+        </div>
+
+        <!-- Tarjeta de Pregunta Activa -->
+        <div class="survey-question-card">
+          <div>
+            <div id="survey-factor-title" class="question-meta">Factor 1: Proyecto Educativo</div>
+            <div id="survey-question-text" class="question-text">
+              ¿El proyecto educativo del Programa Académico es coherente con la misión y la identidad institucional?
+            </div>
+          </div>
+
+          <!-- Escala Likert 1-5 -->
+          <div>
+            <div class="likert-scale">
+              <div class="likert-option" onclick="responderPregunta(1)">
+                <div class="likert-button" id="likert-btn-1">1</div>
+                <div class="likert-label">Totalmente en Desacuerdo</div>
+              </div>
+              <div class="likert-option" onclick="responderPregunta(2)">
+                <div class="likert-button" id="likert-btn-2">2</div>
+                <div class="likert-label">En Desacuerdo</div>
+              </div>
+              <div class="likert-option" onclick="responderPregunta(3)">
+                <div class="likert-button" id="likert-btn-3">3</div>
+                <div class="likert-label">Neutro</div>
+              </div>
+              <div class="likert-option" onclick="responderPregunta(4)">
+                <div class="likert-button" id="likert-btn-4">4</div>
+                <div class="likert-label">De Acuerdo</div>
+              </div>
+              <div class="likert-option" onclick="responderPregunta(5)">
+                <div class="likert-button" id="likert-btn-5">5</div>
+                <div class="likert-label">Totalmente de Acuerdo</div>
+              </div>
+            </div>
+
+            <!-- Controles de Navegación del Encuesta -->
+            <div class="survey-navigation">
+              <button class="btn-secondary" id="btn-previa" onclick="navegarPregunta(-1)" disabled>
+                <i class="fa-solid fa-chevron-left"></i> Anterior
+              </button>
+              
+              <div class="keyboard-shortcut-hint">
+                <span>Califica de <kbd class="kbd-key">1</kbd> a <kbd class="kbd-key">5</kbd> en tu teclado</span>
+              </div>
+              
+              <button class="btn-secondary" id="btn-siguiente" onclick="navegarPregunta(1)">
+                Siguiente <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECCIÓN 3.5: COMENTARIOS ADICIONALES FINALES -->
+    <section id="section-comments" class="app-section fade-in hidden">
+      <div class="card-form-container">
+        <div class="form-header">
+          <h2>Comentarios Cualitativos</h2>
+          <p>Para finalizar, puedes aportar sugerencias o comentarios cualitativos sobre el programa académico de forma abierta.</p>
+        </div>
+
+        <textarea id="survey-comments" class="comments-textarea" placeholder="Escribe tus observaciones aquí (Opcional)..."></textarea>
+
+        <div style="display:flex; gap: 1rem;">
+          <button type="button" class="btn-secondary" onclick="volverAEncuestaDesdeComentarios()">
+            <i class="fa-solid fa-chevron-left"></i> Atrás
+          </button>
+          <button type="button" class="btn-primary" onclick="finalizarYEnviarEncuesta()">
+            Enviar Respuestas <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 4: AGRADECIMIENTO / AGRADECIMIENTO -->
+    <section id="section-thanks" class="app-section fade-in hidden" style="text-align: center;">
+      <div class="card-form-container" style="max-width: 500px;">
+        <div style="font-size: 4rem; color: var(--primary-orange); margin-bottom: 1.5rem;">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <h2 style="font-size: 2rem; margin-bottom: 1rem;">¡Muchas Gracias!</h2>
+        <p style="color: var(--text-gray); margin-bottom: 2rem;">Tus respuestas se han guardado con éxito. Has aportado de forma valiosa a nuestro proceso de Autoevaluación y Acreditación de Alta Calidad.</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button class="btn-primary" onclick="reiniciarPortal()">
+            <i class="fa-solid fa-rotate-left"></i> Realizar otra Encuesta
+          </button>
+          <a href="dashboard.html" class="btn-secondary" style="text-decoration: none; justify-content: center;">
+            <i class="fa-solid fa-chart-line"></i> Ir al Dashboard de Resultados
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: HABEAS DATA LEGAL -->
+  <div id="modal-habeas" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Política de Tratamiento de Datos Personales</h3>
+        <button class="btn-close" onclick="cerrarModalHabeas()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>CORPORACIÓN ESCUELA TECNOLÓGICA DEL ORIENTE</strong></p>
+        <p>De conformidad con la Ley 1581 de 2012 (Ley de Protección de Datos Personales o Habeas Data) y sus decretos reglamentarios, le informamos que los datos capturados en este formulario serán tratados bajo estrictos parámetros de seguridad, confidencialidad y privacidad.</p>
+        
+        <h4>1. Finalidad del Tratamiento de Datos</h4>
+        <p>La recolección de los datos personales (Nombre, Cédula, Celular y Correo Electrónico) tiene como única finalidad validar la participación legítima de los estamentos institucionales (Estudiantes, Docentes, Egresados, Administrativos y Empresarios) dentro del proceso de Autoevaluación con fines de Acreditación de Alta Calidad exigidos por el Ministerio de Educación Nacional de Colombia (CNA).</p>
+        
+        <h4>2. Confidencialidad de las Respuestas</h4>
+        <p>Las opiniones, valoraciones y respuestas suministradas en la encuesta son estrictamente confidenciales y se procesarán de forma agregada y estadística. Bajo ninguna circunstancia se asociará su nombre o número de identidad con sus respuestas individuales en los reportes públicos de autoevaluación.</p>
+        
+        <h4>3. Derechos del Titular</h4>
+        <p>Como titular de los datos personales, usted tiene derecho a conocer, actualizar, rectificar y solicitar la supresión de sus datos personales en los términos dispuestos por la Ley 1581 de 2012, dirigiendo una solicitud al correo oficial de protección de datos de la institución.</p>
+      </div>
+      <div style="margin-top: 1.5rem; text-align: right;">
+        <button class="btn-primary" style="width: auto; display: inline-flex;" onclick="cerrarModalHabeas()">
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Carga de Módulos e Scripts -->
+  <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>

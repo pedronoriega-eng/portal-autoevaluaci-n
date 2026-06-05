@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Resultados | Campaña Autoevaluación 2026</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js CDN for beautiful interactive charts in static environments -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Header Institucional -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-symbol">T</div>
+      <div class="logo-text">
+        <h1>Tecnológica del Oriente</h1>
+        <span>Dashboard de Resultados de Alta Calidad</span>
+      </div>
+    </div>
+    <div style="display:flex; gap: 10px; align-items: center;">
+      <a href="index.html" class="btn-secondary" style="text-decoration: none;">
+        <i class="fa-solid fa-arrow-left"></i> Volver a Encuestas
+      </a>
+      <div class="campaign-tag">
+        <i class="fa-solid fa-chart-pie"></i> Resultados en Vivo
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal Dashboard -->
+  <main class="container" style="justify-content: flex-start; padding-top: 2rem;">
+    
+    <div class="hero-section" style="margin-bottom: 2rem; text-align: left;">
+      <h2>Panel de Control y Analítica de Percepción</h2>
+      <p>Resultados consolidados de las encuestas aplicadas a los diferentes estamentos bajo los lineamientos del Acuerdo 01 de 2025 del CESU.</p>
+    </div>
+
+    <!-- KPIs Rápidos -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <span>Total Encuestas Recibidas</span>
+        <strong id="kpi-total-respuestas">0</strong>
+      </div>
+      <div class="kpi-card">
+        <span>Índice de Satisfacción General</span>
+        <strong id="kpi-satisfaccion-general">0.0 / 5.0</strong>
+      </div>
+      <div class="kpi-card">
+        <span>Estamento Líder</span>
+        <strong id="kpi-estamento-lider">-</strong>
+      </div>
+    </div>
+
+    <!-- Gráficos Principales -->
+    <div class="dashboard-layout">
+      
+      <!-- Lado Izquierdo: Participación -->
+      <div class="dashboard-card">
+        <h3>Participación por Estamento</h3>
+        <div class="chart-wrapper">
+          <canvas id="chart-participacion"></canvas>
+        </div>
+        <div style="margin-top: 1.5rem;" id="participation-details-list">
+          <!-- Detalles agregados dinámicamente -->
+        </div>
+      </div>
+
+      <!-- Lado Derecho: Promedio por Factor -->
+      <div class="dashboard-card">
+        <h3>Promedio de Percepción por Factor de Calidad (Radar de Factores)</h3>
+        <div class="chart-wrapper" style="height: 380px;">
+          <canvas id="chart-factores"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Tabla de Registros Recientes (Habeas Data Compliant) -->
+    <div class="dashboard-card" style="margin-top: 2rem; width: 100%;">
+      <h3>Bitácora de Participación Reciente (Confidencial)</h3>
+      <p style="font-size: 0.8rem; color: var(--text-gray); margin-bottom: 1rem;">
+        * Por protección de datos (Habeas Data), los nombres completos no se exponen públicamente en los consolidados y las identificaciones se encuentran censuradas.
+      </p>
+      
+      <div class="table-wrapper">
+        <table class="dashboard-table">
+          <thead>
+            <tr>
+              <th>ID Registro</th>
+              <th>Estamento</th>
+              <th>Programa Académico / Dependencia</th>
+              <th>Fecha Aceptación</th>
+              <th>Estado de Envío</th>
+            </tr>
+          </thead>
+          <tbody id="table-participacion-body">
+            <!-- Filas inyectadas dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module" src="assets/js/dashboard-charts.js"></script>
+</body>
+</html>
