@@ -15,7 +15,7 @@
     <div class="logo-container">
       <img src="https://tecnologicadeloriente.edu.co/wp-content/uploads/2024/09/LOGO-ILLUSTRATOR-01.png" alt="Logo Corporación Escuela Tecnológica del Oriente" class="logo-img">
     </div>
-    <div class="campaign-tag">
+    <div class="campaign-tag" onclick="accederAlDashboard()" title="Acceso Administrativo">
       <i class="fa-solid fa-award"></i> Autoevaluación 2026
     </div>
   </header>
@@ -113,23 +113,6 @@
             <h3>Empresarios / Empleadores</h3>
             <p>Representantes del sector empresarial y productivo vinculados con el desempeño de egresados.</p>
             <button class="btn-card-cta">PARTICIPAR <i class="fa-solid fa-arrow-right"></i></button>
-          </div>
-        </div>
-
-        <!-- Tarjeta Dashboard Administrativo -->
-        <div class="estamento-card" onclick="accederAlDashboard()">
-          <div class="card-image-wrapper">
-            <img src="assets/img/dashboard.png" alt="Dashboard Analítico ETO">
-            <span class="card-badge-modality" style="background-color: var(--text-dark);">Seguridad Activa</span>
-          </div>
-          <div class="card-body-content">
-            <div class="card-badge-container">
-              <span class="badge-custom-gray" style="background-color:#ECEFF1; color:#37474F; border-color:rgba(55,71,79,0.15)">Administrativo</span>
-              <span class="badge-custom-orange" style="background-color:#FFEBEE; color:#C62828; border-color:rgba(198,40,40,0.15)">Restringido</span>
-            </div>
-            <h3>Dashboard de Resultados</h3>
-            <p>Acceso a estadísticas en tiempo real, radar de factores del CESU y consolidados exportables en Excel.</p>
-            <button class="btn-card-cta" style="background-color: var(--text-dark);">CONSULTAR <i class="fa-solid fa-lock"></i></button>
           </div>
         </div>
       </div>
@@ -304,11 +287,8 @@
         
         <div style="display: flex; flex-direction: column; gap: 10px;">
           <button class="btn-primary" onclick="reiniciarPortal()">
-            <i class="fa-solid fa-rotate-left"></i> Realizar otra Encuesta
+            <i class="fa-solid fa-house"></i> Volver al Inicio
           </button>
-          <a href="dashboard.html" class="btn-secondary" style="text-decoration: none; justify-content: center;">
-            <i class="fa-solid fa-chart-line"></i> Ir al Dashboard de Resultados
-          </a>
         </div>
       </div>
     </section>
