@@ -169,6 +169,11 @@
             </label>
           </div>
 
+          <!-- Contenedor para error de duplicidad (Cédula ya registrada) -->
+          <div id="register-error-msg" class="hidden" style="background-color: #FFF3E0; color: #D84315; border: 1px solid rgba(216, 67, 21, 0.2); padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-circle-exclamation"></i> Esta identificación ya tiene una encuesta registrada. Solo se permite una participación por persona.
+          </div>
+
           <div style="display:flex; gap: 1rem;">
             <button type="button" class="btn-secondary" onclick="volverALanding()">
               <i class="fa-solid fa-arrow-left"></i> Atrás

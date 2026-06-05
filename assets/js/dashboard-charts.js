@@ -1,4 +1,9 @@
 /* assets/js/dashboard-charts.js */
+import { QuestionsDB } from './questions.js';
+
+// Estado global de la grilla
+let currentSheet = 'todos';
+let rawData = [];
 
 // Mock Data de inicialización en caso de que esté vacío (Efecto WOW inmediato)
 const MOCK_DATA = [
@@ -73,10 +78,11 @@ document.addEventListener("DOMContentLoaded", () => {
     data = MOCK_DATA;
     localStorage.setItem("encuestas_guardadas", JSON.stringify(MOCK_DATA));
   }
+  rawData = data;
 
   calcularMetricasDashboard(data);
   inicializarGraficos(data);
-  construirTablaParticipacion(data);
+  actualizarGrillaExcel();
 });
 
 // Métricas de KPIs
@@ -285,28 +291,83 @@ function inicializarGraficos(data) {
   });
 }
 
-// Inyección de Registros de Participación Reciente
-function construirTablaParticipacion(data) {
-  const tbody = document.getElementById("table-participacion-body");
-  tbody.innerHTML = "";
+// Inyección y construcción de la Grilla estilo Excel
+function actualizarGrillaExcel() {
+  const head = document.getElementById("excel-table-head");
+  const body = document.getElementById("excel-table-body");
+  if (!head || !body) return;
 
-  // Ordenar del más reciente al más antiguo
-  const sortedData = [...data].sort((a, b) => {
-    return new Date(b.metadata.fecha_creacion) - new Date(a.metadata.fecha_creacion);
+  head.innerHTML = "";
+  body.innerHTML = "";
+
+  // Filtrar los datos según el estamento seleccionado
+  let dataFiltrada = rawData;
+  if (currentSheet !== 'todos') {
+    dataFiltrada = rawData.filter(item => item.metadata.estamento === currentSheet);
+  }
+
+  // 1. CONSTRUIR CABECERA
+  const trHead = document.createElement("tr");
+
+  // Columnas base comunes para todas las hojas
+  const columnasBase = [
+    { label: "N°", key: "row" },
+    { label: "ID Registro", key: "id" },
+    { label: "Estamento", key: "estamento" },
+    { label: "Nombre Completo", key: "nombre" },
+    { label: "Identificación", key: "identificacion" },
+    { label: "Celular", key: "celular" },
+    { label: "Correo Electrónico", key: "correo" },
+    { label: "Programa / Dependencia", key: "programa" },
+    { label: "Fecha Registro", key: "fecha" }
+  ];
+
+  // Si no es "todos", no necesitamos la columna "Estamento"
+  const cols = columnasBase.filter(c => currentSheet === 'todos' || c.key !== 'estamento');
+
+  // Si es una hoja específica de estamento, agregamos sus preguntas como columnas
+  let preguntasSheet = [];
+  if (currentSheet !== 'todos' && QuestionsDB[currentSheet]) {
+    preguntasSheet = QuestionsDB[currentSheet].questions;
+  }
+
+  cols.forEach(c => {
+    const th = document.createElement("th");
+    th.innerText = c.label;
+    trHead.appendChild(th);
   });
 
-  // Mostrar los últimos 10 registros
-  const limitData = sortedData.slice(0, 10);
+  // Agregar cabeceras para las preguntas
+  preguntasSheet.forEach(q => {
+    const th = document.createElement("th");
+    const labelCorto = obtenerLabelCortoPregunta(q.id);
+    th.innerText = labelCorto;
+    th.title = `${q.factor}\n\n${q.texto}`; // Tooltip explicativo
+    th.style.cursor = "help";
+    trHead.appendChild(th);
+  });
 
-  const badges = {
-    estudiantes: "badge-orange",
-    docentes: "badge-gray",
-    egresados: "badge-orange",
-    administrativos: "badge-gray",
-    empleadores: "badge-orange"
-  };
+  // Agregar columna de puntaje promedio y comentarios al final
+  const thPromedio = document.createElement("th");
+  thPromedio.innerText = "Promedio";
+  trHead.appendChild(thPromedio);
 
-  const labels = {
+  const thComentarios = document.createElement("th");
+  thComentarios.innerText = "Comentarios";
+  trHead.appendChild(thComentarios);
+
+  head.appendChild(trHead);
+
+  // 2. CONSTRUIR CUERPO DE DATOS
+  if (dataFiltrada.length === 0) {
+    const tr = document.createElement("tr");
+    const totalCols = cols.length + preguntasSheet.length + 2;
+    tr.innerHTML = `<td colspan="${totalCols}" style="text-align: center; color: var(--text-gray); padding: 2rem;">No hay registros en esta hoja</td>`;
+    body.appendChild(tr);
+    return;
+  }
+
+  const labelEstamento = {
     estudiantes: "Estudiante",
     docentes: "Docente",
     egresados: "Egresado",
@@ -314,24 +375,383 @@ function construirTablaParticipacion(data) {
     empleadores: "Empresario"
   };
 
-  limitData.forEach(item => {
-    const shortId = item.id.substring(0, 8).toUpperCase();
-    const dateFormatted = new Date(item.metadata.fecha_creacion).toLocaleString('es-CO', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+  dataFiltrada.forEach((item, index) => {
+    const tr = document.createElement("tr");
+
+    // Calcular promedio del registro
+    let totalPuntos = 0;
+    let totalRespuestas = 0;
+    for (let q_id in item.respuestas) {
+      const val = parseInt(item.respuestas[q_id]);
+      if (val >= 1 && val <= 5) {
+        totalPuntos += val;
+        totalRespuestas++;
+      }
+    }
+    const promedio = totalRespuestas > 0 ? (totalPuntos / totalRespuestas).toFixed(1) : "-";
+
+    // Columnas comunes
+    cols.forEach(c => {
+      const td = document.createElement("td");
+      if (c.key === "row") {
+        td.innerText = index + 1;
+        td.classList.add("cell-num");
+        td.style.backgroundColor = "#F4F4F4";
+      } else if (c.key === "id") {
+        td.innerText = `#${item.id.substring(0, 8).toUpperCase()}`;
+        td.classList.add("cell-id");
+      } else if (c.key === "estamento") {
+        td.innerHTML = `<span class="badge ${item.metadata.estamento === 'docentes' || item.metadata.estamento === 'administrativos' ? 'badge-gray' : 'badge-orange'}">${labelEstamento[item.metadata.estamento] || item.metadata.estamento}</span>`;
+      } else if (c.key === "nombre") {
+        td.innerText = item.datos_personales.nombre_completo;
+      } else if (c.key === "identificacion") {
+        td.innerText = item.datos_personales.documento_identidad;
+      } else if (c.key === "celular") {
+        td.innerText = item.datos_personales.telefono_celular;
+      } else if (c.key === "correo") {
+        td.innerText = item.datos_personales.correo_electronico;
+      } else if (c.key === "programa") {
+        td.innerText = item.metadata.programa_academico;
+      } else if (c.key === "fecha") {
+        td.innerText = new Date(item.metadata.fecha_creacion).toLocaleDateString('es-CO');
+      }
+      tr.appendChild(td);
     });
 
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td><code>#${shortId}</code></td>
-      <td><span class="badge ${badges[item.metadata.estamento]}">${labels[item.metadata.estamento]}</span></td>
-      <td>${item.metadata.programa_academico}</td>
-      <td>${dateFormatted}</td>
-      <td><span style="color:#00B359; font-weight:600;"><i class="fa-solid fa-cloud-arrow-up"></i> Guardado</span></td>
-    `;
-    tbody.appendChild(tr);
+    // Respuestas Likert específicas
+    preguntasSheet.forEach(q => {
+      const td = document.createElement("td");
+      const valor = item.respuestas[q.id];
+      td.innerText = valor !== undefined ? valor : "-";
+      td.classList.add("cell-num");
+      if (valor !== undefined) {
+        if (valor >= 4) {
+          td.style.color = "#008000"; // Verde
+        } else if (valor <= 2) {
+          td.style.color = "#FF0000"; // Rojo
+        } else {
+          td.style.color = "#D88100"; // Naranja
+        }
+      }
+      tr.appendChild(td);
+    });
+
+    // Promedio
+    const tdProm = document.createElement("td");
+    tdProm.innerText = promedio;
+    tdProm.classList.add("cell-num");
+    if (promedio !== "-") {
+      tdProm.style.backgroundColor = parseFloat(promedio) >= 4.0 ? "#E8F5E9" : (parseFloat(promedio) <= 2.5 ? "#FFEBEE" : "#FFF3E0");
+    }
+    tr.appendChild(tdProm);
+
+    // Comentarios
+    const tdCom = document.createElement("td");
+    tdCom.innerText = item.comentarios_adicionales || "";
+    tdCom.style.maxWidth = "250px";
+    tdCom.style.overflow = "hidden";
+    tdCom.style.textOverflow = "ellipsis";
+    tdCom.title = item.comentarios_adicionales || "";
+    tr.appendChild(tdCom);
+
+    body.appendChild(tr);
   });
 }
+
+// Navegar entre pestañas de Excel
+function cambiarHojaExcel(sheetName, btn) {
+  currentSheet = sheetName;
+  
+  // Actualizar estado activo en la UI
+  document.querySelectorAll(".excel-tab-btn").forEach(b => {
+    b.classList.remove("active");
+  });
+  if (btn) {
+    btn.classList.add("active");
+  }
+
+  actualizarGrillaExcel();
+}
+
+// Helper para limpiar IDs de preguntas
+function obtenerLabelCortoPregunta(id) {
+  const match = id.match(/Factor\s*(\d+)_R(\d+)/i);
+  if (match) {
+    return `F${match[1]}_R${match[2]}`;
+  }
+  return id;
+}
+
+// Exportar datos a CSV compatible con Microsoft Excel (con BOM y delimitado por ;)
+function exportarAExcelCSV() {
+  let dataFiltrada = rawData;
+  if (currentSheet !== 'todos') {
+    dataFiltrada = rawData.filter(item => item.metadata.estamento === currentSheet);
+  }
+
+  const columnasBase = [
+    { label: "ID Registro", key: "id" },
+    { label: "Estamento", key: "estamento" },
+    { label: "Nombre Completo", key: "nombre" },
+    { label: "Identificacion", key: "identificacion" },
+    { label: "Celular", key: "celular" },
+    { label: "Correo Electronico", key: "correo" },
+    { label: "Programa / Dependencia", key: "programa" },
+    { label: "Fecha Registro", key: "fecha" }
+  ];
+
+  const cols = columnasBase.filter(c => currentSheet === 'todos' || c.key !== 'estamento');
+  let preguntasSheet = [];
+  if (currentSheet !== 'todos' && QuestionsDB[currentSheet]) {
+    preguntasSheet = QuestionsDB[currentSheet].questions;
+  }
+
+  // Encabezados
+  let csvHeaders = cols.map(c => c.label);
+  preguntasSheet.forEach(q => {
+    csvHeaders.push(obtenerLabelCortoPregunta(q.id));
+  });
+  csvHeaders.push("Promedio General");
+  csvHeaders.push("Comentarios");
+
+  const escapeCSV = (val) => {
+    if (val === null || val === undefined) return "";
+    let strVal = String(val).replace(/"/g, '""');
+    return `"${strVal}"`;
+  };
+
+  let csvRows = [];
+  csvRows.push(csvHeaders.map(h => escapeCSV(h)).join(";")); // Separador ; para Excel en español
+
+  const labelEstamento = {
+    estudiantes: "Estudiante",
+    docentes: "Docente",
+    egresados: "Egresado",
+    administrativos: "Administrativo",
+    empleadores: "Empresario"
+  };
+
+  dataFiltrada.forEach(item => {
+    let rowValues = [];
+    
+    // Promedio
+    let totalPuntos = 0;
+    let totalRespuestas = 0;
+    for (let q_id in item.respuestas) {
+      const val = parseInt(item.respuestas[q_id]);
+      if (val >= 1 && val <= 5) {
+        totalPuntos += val;
+        totalRespuestas++;
+      }
+    }
+    const promedio = totalRespuestas > 0 ? (totalPuntos / totalRespuestas).toFixed(1) : "-";
+
+    cols.forEach(c => {
+      if (c.key === "id") {
+        rowValues.push(item.id);
+      } else if (c.key === "estamento") {
+        rowValues.push(labelEstamento[item.metadata.estamento] || item.metadata.estamento);
+      } else if (c.key === "nombre") {
+        rowValues.push(item.datos_personales.nombre_completo);
+      } else if (c.key === "identificacion") {
+        rowValues.push(item.datos_personales.documento_identidad);
+      } else if (c.key === "celular") {
+        rowValues.push(item.datos_personales.telefono_celular);
+      } else if (c.key === "correo") {
+        rowValues.push(item.datos_personales.correo_electronico);
+      } else if (c.key === "programa") {
+        rowValues.push(item.metadata.programa_academico);
+      } else if (c.key === "fecha") {
+        rowValues.push(new Date(item.metadata.fecha_creacion).toISOString());
+      }
+    });
+
+    // Respuestas
+    preguntasSheet.forEach(q => {
+      const valor = item.respuestas[q.id];
+      rowValues.push(valor !== undefined ? valor : "");
+    });
+
+    rowValues.push(promedio);
+    rowValues.push(item.comentarios_adicionales || "");
+
+    csvRows.push(rowValues.map(v => escapeCSV(v)).join(";"));
+  });
+
+  // UTF-8 BOM (\uFEFF) para abrir correctamente en Excel con caracteres especiales
+  const csvContent = "\uFEFF" + csvRows.join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", `autoevaluacion_datos_${currentSheet}_2026.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// Helper para promediar por cada uno de los 12 factores del CESU
+function calcularPromediosPorFactor(respuestas) {
+  const factorSum = {};
+  const factorCount = {};
+  for (let i = 1; i <= 12; i++) {
+    factorSum[i] = 0;
+    factorCount[i] = 0;
+  }
+  for (let q_id in respuestas) {
+    const calif = parseInt(respuestas[q_id]);
+    const match = q_id.match(/Factor\s*(\d+)/i);
+    if (match && calif >= 1 && calif <= 5) {
+      const fNum = parseInt(match[1]);
+      factorSum[fNum] += calif;
+      factorCount[fNum]++;
+    }
+  }
+  const promedios = {};
+  for (let i = 1; i <= 12; i++) {
+    promedios[i] = factorCount[i] > 0 ? (factorSum[i] / factorCount[i]).toFixed(1) : "-";
+  }
+  return promedios;
+}
+
+// Exportar hoja actual en formato de tabla Markdown premium
+function exportarAMarkdown() {
+  let dataFiltrada = rawData;
+  if (currentSheet !== 'todos') {
+    dataFiltrada = rawData.filter(item => item.metadata.estamento === currentSheet);
+  }
+
+  const labelEstamento = {
+    estudiantes: "Estudiantes",
+    docentes: "Docentes",
+    egresados: "Egresados",
+    administrativos: "Administrativos",
+    empleadores: "Empresarios"
+  };
+
+  const sheetTitle = currentSheet === 'todos' ? "Resumen General de Participación" : `Estamento ${labelEstamento[currentSheet]}`;
+  const fechaGeneracion = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  let md = `# Informe de Autoevaluación Institucional (Acuerdo 01 de 2025 CESU)\n`;
+  md += `**Consolidado de Datos:** ${sheetTitle}\n`;
+  md += `**Fecha de Generación:** ${fechaGeneracion}\n`;
+  md += `**Total Registros:** ${dataFiltrada.length}\n\n`;
+
+  if (currentSheet === 'todos') {
+    md += `| ID Registro | Estamento | Nombre Completo | Identificación | Programa / Dependencia | Fecha | Promedio | Comentarios |\n`;
+    md += `| :--- | :--- | :--- | :--- | :--- | :---: | :---: | :--- |\n`;
+
+    dataFiltrada.forEach(item => {
+      let totalPuntos = 0;
+      let totalRespuestas = 0;
+      for (let q_id in item.respuestas) {
+        const val = parseInt(item.respuestas[q_id]);
+        if (val >= 1 && val <= 5) {
+          totalPuntos += val;
+          totalRespuestas++;
+        }
+      }
+      const promedio = totalRespuestas > 0 ? (totalPuntos / totalRespuestas).toFixed(1) : "-";
+      const shortId = item.id.substring(0, 8).toUpperCase();
+      const dateFormatted = new Date(item.metadata.fecha_creacion).toLocaleDateString('es-CO');
+      const comments = item.comentarios_adicionales ? item.comentarios_adicionales.replace(/\n/g, ' ') : "";
+      
+      md += `| \`#${shortId}\` | ${labelEstamento[item.metadata.estamento] || item.metadata.estamento} | ${item.datos_personales.nombre_completo} | \`${item.datos_personales.documento_identidad}\` | ${item.metadata.programa_academico} | ${dateFormatted} | **${promedio}** | ${comments} |\n`;
+    });
+  } else {
+    // Hoja específica: Muestra promedios de los 12 Factores del CESU para legibilidad
+    md += `| ID Registro | Nombre Completo | Identificación | Programa Académico | F1 | F2 | F3 | F4 | F5 | F6 | F7 | F8 | F9 | F10 | F11 | F12 | Prom. | Comentarios |\n`;
+    md += `| :--- | :--- | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |\n`;
+
+    dataFiltrada.forEach(item => {
+      const shortId = item.id.substring(0, 8).toUpperCase();
+      const name = item.datos_personales.nombre_completo;
+      const doc = item.datos_personales.documento_identidad;
+      const prog = item.metadata.programa_academico;
+      const comments = item.comentarios_adicionales ? item.comentarios_adicionales.replace(/\n/g, ' ') : "";
+
+      // Promedio general
+      let totalPuntos = 0;
+      let totalRespuestas = 0;
+      for (let q_id in item.respuestas) {
+        const val = parseInt(item.respuestas[q_id]);
+        if (val >= 1 && val <= 5) {
+          totalPuntos += val;
+          totalRespuestas++;
+        }
+      }
+      const promedioGen = totalRespuestas > 0 ? (totalPuntos / totalRespuestas).toFixed(1) : "-";
+
+      // Promedios por Factor
+      const factorProms = calcularPromediosPorFactor(item.respuestas);
+
+      md += `| \`#${shortId}\` | ${name} | \`${doc}\` | ${prog} | ${factorProms[1]} | ${factorProms[2]} | ${factorProms[3]} | ${factorProms[4]} | ${factorProms[5]} | ${factorProms[6]} | ${factorProms[7]} | ${factorProms[8]} | ${factorProms[9]} | ${factorProms[10]} | ${factorProms[11]} | ${factorProms[12]} | **${promedioGen}** | ${comments} |\n`;
+    });
+
+    md += `\n* **Leyenda de Factores del Acuerdo 01 de 2025 del CESU:**\n`;
+    md += `  - **F1:** Proyecto Educativo del Programa\n`;
+    md += `  - **F2:** Comunidad de Estudiantes\n`;
+    md += `  - **F3:** Comunidad de Profesores\n`;
+    md += `  - **F4:** Egresados e Impacto en el Entorno\n`;
+    md += `  - **F5:** Aspectos Académicos y Resultados de Aprendizaje\n`;
+    md += `  - **F6:** Permanencia y Graduación Oportuna\n`;
+    md += `  - **F7:** Proyección Social e Interacción con el Entorno\n`;
+    md += `  - **F8:** Investigación, Creación e Innovación\n`;
+    md += `  - **F9:** Bienestar de la Comunidad del Programa\n`;
+    md += `  - **F10:** Recursos Físicos y Tecnológicos\n`;
+    md += `  - **F11:** Organización, Administración y Financiación\n`;
+    md += `  - **F12:** Sistema Interno de Aseguramiento de la Calidad\n`;
+  }
+
+  // Inyectar en text area y abrir modal
+  const area = document.getElementById("markdown-output-area");
+  if (area) {
+    area.value = md;
+  }
+  
+  const modal = document.getElementById("modal-markdown");
+  if (modal) {
+    modal.classList.remove("hidden");
+  }
+}
+
+// Modal Markdown Cerrar
+function cerrarModalMarkdown() {
+  const modal = document.getElementById("modal-markdown");
+  if (modal) {
+    modal.classList.add("hidden");
+  }
+}
+
+// Copiar al portapapeles con feedback visual
+function copiarMarkdownAlPortapapeles() {
+  const area = document.getElementById("markdown-output-area");
+  const btn = document.getElementById("btn-copiar-markdown");
+  if (!area) return;
+
+  navigator.clipboard.writeText(area.value).then(() => {
+    if (btn) {
+      const textOriginal = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-circle-check"></i> ¡Copiado!`;
+      btn.style.backgroundColor = "#2E7D32";
+      
+      setTimeout(() => {
+        btn.innerHTML = textOriginal;
+        btn.style.backgroundColor = "var(--text-dark)";
+      }, 2000);
+    }
+  }).catch(err => {
+    console.error("Fallo al copiar: ", err);
+    alert("No se pudo copiar automáticamente. Copia el contenido manualmente.");
+  });
+}
+
+// Exponer las funciones globales para interactuar desde el HTML (SPA)
+window.cambiarHojaExcel = cambiarHojaExcel;
+window.exportarAExcelCSV = exportarAExcelCSV;
+window.exportarAMarkdown = exportarAMarkdown;
+window.cerrarModalMarkdown = cerrarModalMarkdown;
+window.copiarMarkdownAlPortapapeles = copiarMarkdownAlPortapapeles;
+

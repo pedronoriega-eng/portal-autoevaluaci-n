@@ -65,12 +65,30 @@ function validarFormularioHabeasData() {
 
   AppState.userData = { nombre, cedula, celular, correo, programa, habeasData };
 
+  // Validar si la identificación ya votó en cualquier estamento de forma proactiva
+  const encuestasGuardadas = JSON.parse(localStorage.getItem("encuestas_guardadas")) || [];
+  const cedulaIngresada = cedula.trim();
+  const yaParticipo = cedulaIngresada.length >= 6 && encuestasGuardadas.some(
+    enc => enc.datos_personales.documento_identidad.trim() === cedulaIngresada
+  );
+
+  const errorMsgEl = document.getElementById("register-error-msg");
+  if (errorMsgEl) {
+    if (yaParticipo) {
+      errorMsgEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Esta identificación ya tiene una encuesta registrada en el sistema. Para garantizar la transparencia, solo se permite una encuesta por persona.`;
+      errorMsgEl.classList.remove("hidden");
+    } else {
+      errorMsgEl.classList.add("hidden");
+    }
+  }
+
   // Validaciones RegEx
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const phoneRegex = /^3\d{9}$/; // Celulares en Colombia (10 dígitos empezando con 3)
 
   const isValid = nombre.trim().length > 4 &&
                   cedula.trim().length >= 6 &&
+                  !yaParticipo &&
                   phoneRegex.test(celular) &&
                   emailRegex.test(correo) &&
                   programa !== "" &&
@@ -125,6 +143,24 @@ function seleccionarEstamento(rol) {
 // Paso 2: Iniciar la encuesta activa tras validar Habeas Data
 function iniciarEncuestaActiva() {
   if (!AppState.isAuthorized) return;
+
+  // Validar si la identificación ya votó en cualquier estamento
+  const encuestasGuardadas = JSON.parse(localStorage.getItem("encuestas_guardadas")) || [];
+  const cedulaIngresada = AppState.userData.cedula.trim();
+
+  const yaParticipo = encuestasGuardadas.some(
+    enc => enc.datos_personales.documento_identidad.trim() === cedulaIngresada
+  );
+
+  if (yaParticipo) {
+    const errorMsgEl = document.getElementById("register-error-msg");
+    if (errorMsgEl) {
+      errorMsgEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Esta identificación ya tiene una encuesta registrada en el sistema. Para garantizar la transparencia, solo se permite una encuesta por persona.`;
+      errorMsgEl.classList.remove("hidden");
+    }
+    return;
+  }
+
   navegarA("section-survey");
   renderizarPreguntaActual();
 }

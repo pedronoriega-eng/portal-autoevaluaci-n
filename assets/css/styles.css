@@ -861,3 +861,104 @@ header {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   Base de Datos y Grilla de Celdas tipo Excel
+   ========================================================================== */
+.excel-tabs-container {
+  display: flex;
+  background-color: #ECECEC;
+  border: 1px solid #D0D0D0;
+  border-bottom: none;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.excel-tab-btn {
+  background-color: #F4F4F4;
+  color: #555555;
+  border: none;
+  border-right: 1px solid #D0D0D0;
+  padding: 12px 20px;
+  font-family: var(--font-base);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition-smooth);
+}
+
+.excel-tab-btn:hover {
+  background-color: #EAEAEA;
+}
+
+.excel-tab-btn.active {
+  background-color: var(--bg-white);
+  color: var(--primary-orange);
+  font-weight: 600;
+  border-bottom: 3px solid var(--primary-orange);
+  margin-bottom: -1px;
+}
+
+.excel-table-container {
+  border: 1px solid #D0D0D0;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  max-height: 480px;
+  overflow-y: auto;
+  overflow-x: auto;
+  background-color: #F9F9F9;
+}
+
+.excel-style-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+.excel-style-table th {
+  background-color: #F0F0F0;
+  color: var(--text-dark);
+  border-right: 1px solid #D0D0D0;
+  border-bottom: 2px solid #C0C0C0;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.excel-style-table td {
+  border-right: 1px solid #E5E5E5;
+  border-bottom: 1px solid #E5E5E5;
+  padding: 8px 12px;
+  background-color: #FFFFFF;
+  font-size: 0.82rem;
+  color: var(--text-dark);
+  white-space: nowrap;
+}
+
+.excel-style-table tr:hover td {
+  background-color: #FFF9F0 !important;
+}
+
+.excel-style-table td.cell-num {
+  font-family: 'Courier New', Courier, monospace;
+  text-align: center;
+  font-weight: 600;
+  color: var(--primary-orange-hover);
+}
+
+.excel-style-table td.cell-id {
+  font-family: 'Courier New', Courier, monospace;
+  color: var(--text-gray);
+  font-weight: 500;
+}
+
