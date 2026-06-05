@@ -8,7 +8,7 @@
  * - Empresarios / Empleadores: 3
  */
 
-export const QuestionsDB = {
+const QuestionsDB = {
   "estudiantes": {
     "name": "Estudiantes",
     "total": 31,
@@ -1076,3 +1076,6 @@ export const QuestionsDB = {
     ]
   }
 };
+
+window.QuestionsDB = QuestionsDB;
+

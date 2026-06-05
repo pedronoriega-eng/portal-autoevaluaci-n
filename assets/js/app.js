@@ -1,6 +1,3 @@
-/* assets/js/app.js */
-import { QuestionsDB } from './questions.js';
-
 // Estado de la aplicación
 const AppState = {
   currentRol: null,

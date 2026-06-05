@@ -1,5 +1,4 @@
 /* assets/js/dashboard-charts.js */
-import { QuestionsDB } from './questions.js';
 
 // Estado global de la grilla
 let currentSheet = 'todos';
