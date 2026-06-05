@@ -175,12 +175,11 @@ function inicializarGraficos(data) {
 
   // Calcular promedios
   const promediosFactores = [];
-  const baseFactoresMock = [4.2, 4.0, 4.3, 3.9, 4.1, 4.4, 4.2, 4.0, 4.3, 4.1, 3.8, 4.2]; // Fallback mock values
   for (let i = 1; i <= 12; i++) {
     if (factoresContador[i] > 0) {
       promediosFactores.push(parseFloat((factoresAcumulador[i] / factoresContador[i]).toFixed(2)));
     } else {
-      promediosFactores.push(baseFactoresMock[i - 1]); // Si no hay respuestas para ese factor, usar mock para ilustrar
+      promediosFactores.push(0); // 0 indica que no hay respuestas registradas para este factor
     }
   }
 
