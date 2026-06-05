@@ -4,70 +4,8 @@
 let currentSheet = 'todos';
 let rawData = [];
 
-// Mock Data de inicialización en caso de que esté vacío (Efecto WOW inmediato)
-const MOCK_DATA = [
-  // Estudiantes
-  {
-    id: "e47b92f1-4df2-47ba-89a3-5c8e470295ab",
-    metadata: { fecha_creacion: "2026-06-04T10:15:00Z", estamento: "estudiantes", programa_academico: "Ingeniería de Sistemas", version_acuerdo: "CESU 01-2025" },
-    datos_personales: { nombre_completo: "Carlos Andrés Silva", documento_identidad: "1098555123", telefono_celular: "3151234567", correo_electronico: "carlos.silva@oriente.edu.co" },
-    respuestas: { "Factor 1_R1_estudiantes": 5, "Factor 1_R2_estudiantes": 4, "Factor 2_R1_estudiantes": 4, "Factor 2_R2_estudiantes": 5, "Factor 5_R7_estudiantes": 4, "Factor 9_R1_estudiantes": 5, "Factor 10_R1_estudiantes": 4, "Factor 11_R2_estudiantes": 3, "Factor 12_R1_estudiantes": 4 },
-    comentarios_adicionales: "El programa es excelente, muy actual."
-  },
-  {
-    id: "a34b22c1-23f2-41aa-99a3-5c8e470295cc",
-    metadata: { fecha_creacion: "2026-06-04T14:20:00Z", estamento: "estudiantes", programa_academico: "Licenciatura en Educación Infantil", version_acuerdo: "CESU 01-2025" },
-    datos_personales: { nombre_completo: "Valentina Gómez", documento_identidad: "1095333222", telefono_celular: "3167778888", correo_electronico: "val.gomez@oriente.edu.co" },
-    respuestas: { "Factor 1_R1_estudiantes": 4, "Factor 1_R2_estudiantes": 5, "Factor 2_R1_estudiantes": 5, "Factor 2_R2_estudiantes": 5, "Factor 5_R7_estudiantes": 5, "Factor 9_R1_estudiantes": 4, "Factor 10_R1_estudiantes": 5, "Factor 11_R2_estudiantes": 4, "Factor 12_R1_estudiantes": 5 },
-    comentarios_adicionales: ""
-  },
-  {
-    id: "b45c22c1-43f2-45aa-99a3-5c8e470295dd",
-    metadata: { fecha_creacion: "2026-06-05T08:10:00Z", estamento: "estudiantes", programa_academico: "Administración de la Seguridad y Salud en el Trabajo", version_acuerdo: "CESU 01-2025" },
-    datos_personales: { nombre_completo: "Juan Camilo Suárez", documento_identidad: "1092888444", telefono_celular: "3189990000", correo_electronico: "juan.suarez@oriente.edu.co" },
-    respuestas: { "Factor 1_R1_estudiantes": 3, "Factor 1_R2_estudiantes": 4, "Factor 2_R1_estudiantes": 4, "Factor 2_R2_estudiantes": 3, "Factor 5_R7_estudiantes": 3, "Factor 9_R1_estudiantes": 4, "Factor 10_R1_estudiantes": 4, "Factor 11_R2_estudiantes": 3, "Factor 12_R1_estudiantes": 3 },
-    comentarios_adicionales: "Se deben mejorar los laboratorios."
-  },
-  // Docentes
-  {
-    id: "f89d33c1-53f2-46aa-99a3-5c8e470295ee",
-    metadata: { fecha_creacion: "2026-06-03T16:45:00Z", estamento: "docentes", programa_academico: "Ingeniería de Sistemas", version_acuerdo: "CESU 01-2025" },
-    datos_personales: { nombre_completo: "Ing. Sandra Milena Patiño", documento_identidad: "63555222", telefono_celular: "3174445555", correo_electronico: "sandra.patino@oriente.edu.co" },
-    respuestas: { "Factor 1_R1_docentes": 5, "Factor 1_R2_docentes": 5, "Factor 2_R1_docentes": 4, "Factor 3_R1_docentes": 5, "Factor 3_R2_docentes": 5, "Factor 5_R1_docentes": 4, "Factor 8_R1_docentes": 4, "Factor 10_R1_docentes": 4, "Factor 11_R1_docentes": 4, "Factor 12_R1_docentes": 5 },
-    comentarios_adicionales: "El proceso de autoevaluación ha sido muy organizado."
-  },
-  {
-    id: "d89d44c1-63f2-47aa-99a3-5c8e470295ff",
-    metadata: { fecha_creacion: "2026-06-04T09:30:00Z", estamento: "docentes", programa_academico: "Derecho", version_acuerdo: "CESU 01-2025" },
-    datos_personales: { nombre_completo: "Dr. Hernando Salazar", documento_identidad: "91222333", telefono_celular: "3158882211", correo_electronico: "h.salazar@oriente.edu.co" },
-    respuestas: { "Factor 1_R1_docentes": 4, "Factor 1_R2_docentes": 4, "Factor 2_R1_docentes": 4, "Factor 3_R1_docentes": 4, "Factor 3_R2_docentes": 4, "Factor 5_R1_docentes": 5, "Factor 8_R1_docentes": 5, "Factor 10_R1_docentes": 5, "Factor 11_R1_docentes": 4, "Factor 12_R1_docentes": 4 },
-    comentarios_adicionales: ""
-  },
-  // Egresados
-  {
-    id: "c78e44b2-73f2-48bb-99a3-5c8e470295aa",
-    metadata: { fecha_creacion: "2026-06-04T11:00:00Z", estamento: "egresados", programa_academico: "Licenciatura en Educación Infantil", version_acuerdo: "CESU 01-2025" },
-    datos_personales: { nombre_completo: "María Paula Villamizar", documento_identidad: "1098444777", telefono_celular: "3103332211", correo_electronico: "mp.villamizar@oriente.edu.co" },
-    respuestas: { "Factor 4_R1_egresados": 5, "Factor 4_R2_egresados": 4, "Factor 9_R1_egresados": 5, "Factor 10_R1_egresados": 4, "Factor 11_R2_egresados": 5 },
-    comentarios_adicionales: "Orgullosa egresada."
-  },
-  // Administrativos
-  {
-    id: "b56d33a1-12f2-34aa-99a3-5c8e470295ab",
-    metadata: { fecha_creacion: "2026-06-05T11:30:00Z", estamento: "administrativos", programa_academico: "Área Administrativa", version_acuerdo: "CESU 01-2025" },
-    datos_personales: { nombre_completo: "Diana Carolina Ortiz", documento_identidad: "1094888111", telefono_celular: "3128889900", correo_electronico: "diana.ortiz@oriente.edu.co" },
-    respuestas: { "Factor 9_R1_administrativos": 4, "Factor 10_R1_administrativos": 4, "Factor 11_R1_administrativos": 4, "Factor 11_R2_administrativos": 3, "Factor 12_R1_administrativos": 4 },
-    comentarios_adicionales: ""
-  },
-  // Empresarios
-  {
-    id: "a12d11a1-99f2-22aa-99a3-5c8e470295cd",
-    metadata: { fecha_creacion: "2026-06-03T14:10:00Z", estamento: "empleadores", programa_academico: "Sector Empresarial", version_acuerdo: "CESU 01-2025" },
-    datos_personales: { nombre_completo: "Carlos Hugo Rueda (Manager)", documento_identidad: "91444555", telefono_celular: "3001112233", correo_electronico: "ch.rueda@zonafranca.com" },
-    respuestas: { "Factor 1_R5_empleadores": 5, "Factor 7_R3_empleadores": 5, "Factor 7_R4_empleadores": 4 },
-    comentarios_adicionales: "Los egresados demuestran alta competencia técnica y ética."
-  }
-];
+// Mock Data vacío para producción limpia
+const MOCK_DATA = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   // Verificar acceso primero en sessionStorage
@@ -834,6 +772,16 @@ function eliminarRegistro(id) {
 
 window.validarAccesoDashboard = validarAccesoDashboard;
 window.eliminarRegistro = eliminarRegistro;
+
+// Vaciar por completo la base de datos local a 0
+function limpiarBaseDatos() {
+  if (confirm("¿Está seguro de que desea vaciar por completo la base de datos del portal? Se eliminarán permanentemente todas las encuestas registradas de prueba y el contador volverá a 0. Esta acción no se puede deshacer.")) {
+    localStorage.setItem("encuestas_guardadas", JSON.stringify([]));
+    location.reload();
+  }
+}
+
+window.limpiarBaseDatos = limpiarBaseDatos;
 
 
 
